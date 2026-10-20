@@ -1,6 +1,7 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 #include <iostream>
+#include <stdexcept>
 
 class DynamicArray {
     int* data;
@@ -13,16 +14,16 @@ public:
     }
     int size() const { return count; }
     int get(int i) const {
-        if (i < 0 || i >= count) throw "index";
+        if (i < 0 || i >= count) throw std::out_of_range("Индекс вне границ массива");
         return data[i];
     }
     void set(int i, int value) {
-        if (i < 0 || i >= count) throw "index";
-        if (value < -100 || value > 100) throw "value";
+        if (i < 0 || i >= count) throw std::out_of_range("Индекс вне границ массива");
+        if (value < -100 || value > 100) throw std::invalid_argument("Значение должно быть от -100 до 100");
         data[i] = value;
     }
     void pushBack(int value) {
-        if (value < -100 || value > 100) throw "value";
+        if (value < -100 || value > 100) throw std::invalid_argument("Значение должно быть от -100 до 100");
         int* bigger = new int[count + 1];
         for (int i = 0; i < count; ++i) bigger[i] = data[i];
         bigger[count] = value;
