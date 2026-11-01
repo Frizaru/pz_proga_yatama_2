@@ -33,7 +33,6 @@ int main() {
     }
 
     try {
-        // Имитируем неудачное выделение памяти для демонстрации типа исключения.
         throw bad_alloc();
     } catch (const bad_alloc&) {
         cout << "Обработано bad_alloc\n";
