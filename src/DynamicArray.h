@@ -4,19 +4,21 @@
 #include <type_traits>
 #include <typeinfo>
 
+using namespace std;
+
 template <typename T>
 class DynamicArray {
     T* data;
     int count;
 
     void checkValue(T value) const {
-        if constexpr (std::is_integral_v<T>) {
+        if constexpr (is_integral_v<T>) {
             bool wrongValue = value > 100;
-            if constexpr (std::is_signed_v<T>) {
+            if constexpr (is_signed_v<T>) {
                 wrongValue = wrongValue || value < -100;
             }
             if (wrongValue) {
-                throw std::invalid_argument("Значение должно быть от -100 до 100");
+                throw invalid_argument("Значение должно быть от -100 до 100");
             }
         }
     }
@@ -40,14 +42,14 @@ public:
 
     T get(int i) const {
         if (i < 0 || i >= count) {
-            throw std::out_of_range("Индекс вне границ массива");
+            throw out_of_range("Индекс вне границ массива");
         }
         return data[i];
     }
 
     void set(int i, T value) {
         if (i < 0 || i >= count) {
-            throw std::out_of_range("Индекс вне границ массива");
+            throw out_of_range("Индекс вне границ массива");
         }
         checkValue(value);
         data[i] = value;
@@ -83,31 +85,31 @@ public:
 
     double distance(const DynamicArray& other) const {
         if (count != other.count) {
-            throw std::invalid_argument("Размеры массивов должны совпадать");
+            throw invalid_argument("Размеры массивов должны совпадать");
         }
 
-        if constexpr (std::is_arithmetic_v<T>) {
+        if constexpr (is_arithmetic_v<T>) {
             double sum = 0;
             for (int i = 0; i < count; ++i) {
                 double difference = data[i] - other.data[i];
                 sum += difference * difference;
             }
-            return std::sqrt(sum);
+            return sqrt(sum);
         } else {
-            throw std::bad_typeid();
+            throw bad_typeid();
         }
     }
 
     void print() const {
         for (int i = 0; i < count; ++i) {
-            std::cout << data[i] << ' ';
+            cout << data[i] << ' ';
         }
-        std::cout << '\n';
+        cout << '\n';
     }
 };
 
 template <typename T>
-std::ostream& operator<<(std::ostream& output, const DynamicArray<T>& array) {
+ostream& operator<<(ostream& output, const DynamicArray<T>& array) {
     for (int i = 0; i < array.size(); ++i) {
         output << array.get(i) << ' ';
     }
