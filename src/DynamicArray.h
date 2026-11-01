@@ -1,6 +1,3 @@
-#ifndef DYNAMIC_ARRAY_H
-#define DYNAMIC_ARRAY_H
-
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
@@ -116,5 +113,3 @@ std::ostream& operator<<(std::ostream& output, const DynamicArray<T>& array) {
     }
     return output;
 }
-
-#endif
