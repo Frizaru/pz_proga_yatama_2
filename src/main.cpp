@@ -12,7 +12,10 @@ int main() {
     DynamicArray<int> b(a);
     b.pushBack(30);
     a.add(b);
+    std::cout << "После сложения: ";
+    a.print();
     a.sub(b);
+    std::cout << "После вычитания: ";
     a.print();
 
     try {
