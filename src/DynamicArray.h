@@ -14,15 +14,18 @@ class DynamicArray {
 
     void checkValue(T value) const {
         if constexpr (std::is_integral_v<T>) {
-            long double number = static_cast<long double>(value);
-            if (number < -100 || number > 100) {
+            bool wrongValue = value > 100;
+            if constexpr (std::is_signed_v<T>) {
+                wrongValue = wrongValue || value < -100;
+            }
+            if (wrongValue) {
                 throw std::invalid_argument("Значение должно быть от -100 до 100");
             }
         }
     }
 
 public:
-    explicit DynamicArray(int size) : data(new T[size]{}), count(size) {}
+    DynamicArray(int size) : data(new T[size]{}), count(size) {}
 
     ~DynamicArray() {
         delete[] data;
@@ -55,25 +58,29 @@ public:
 
     void pushBack(T value) {
         checkValue(value);
-        T* bigger = new T[count + 1];
+        T* newData = new T[count + 1];
         for (int i = 0; i < count; ++i) {
-            bigger[i] = data[i];
+            newData[i] = data[i];
         }
-        bigger[count] = value;
+        newData[count] = value;
         delete[] data;
-        data = bigger;
+        data = newData;
         ++count;
     }
 
     void add(const DynamicArray& other) {
         for (int i = 0; i < count; ++i) {
-            data[i] += i < other.count ? other.data[i] : T{};
+            if (i < other.count) {
+                data[i] += other.data[i];
+            }
         }
     }
 
     void sub(const DynamicArray& other) {
         for (int i = 0; i < count; ++i) {
-            data[i] -= i < other.count ? other.data[i] : T{};
+            if (i < other.count) {
+                data[i] -= other.data[i];
+            }
         }
     }
 
@@ -85,7 +92,7 @@ public:
         if constexpr (std::is_arithmetic_v<T>) {
             double sum = 0;
             for (int i = 0; i < count; ++i) {
-                double difference = static_cast<double>(data[i]) - static_cast<double>(other.data[i]);
+                double difference = data[i] - other.data[i];
                 sum += difference * difference;
             }
             return std::sqrt(sum);
