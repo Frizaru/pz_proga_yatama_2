@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <typeinfo>
+#include <utility>
 
 using namespace std;
 
@@ -58,10 +59,39 @@ public:
         delete[] data;
     }
 
-    DynamicArray(const DynamicArray& other) : data(new T[other.count]), count(other.count) {
+    DynamicArray(const DynamicArray& other) : DynamicArray(other.count) {
         for (int i = 0; i < count; ++i) {
             data[i] = other.data[i];
         }
+    }
+
+    DynamicArray& operator=(const DynamicArray& other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        DynamicArray copy(other);
+        swap(data, copy.data);
+        swap(count, copy.count);
+        return *this;
+    }
+
+    DynamicArray(DynamicArray&& other) noexcept : data(other.data), count(other.count) {
+        other.data = nullptr;
+        other.count = 0;
+    }
+
+    DynamicArray& operator=(DynamicArray&& other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        delete[] data;
+        data = other.data;
+        count = other.count;
+        other.data = nullptr;
+        other.count = 0;
+        return *this;
     }
 
     int size() const {
@@ -91,14 +121,12 @@ public:
 
     void pushBack(T value) {
         checkValue(value);
-        T* newData = new T[count + 1];
+        DynamicArray newArray(count + 1);
         for (int i = 0; i < count; ++i) {
-            newData[i] = data[i];
+            newArray.data[i] = data[i];
         }
-        newData[count] = value;
-        delete[] data;
-        data = newData;
-        ++count;
+        newArray.data[count] = value;
+        *this = std::move(newArray);
     }
 
     void add(const DynamicArray& other) {
