@@ -4,8 +4,14 @@
 #include <stdexcept>
 #include <string>
 #include <typeinfo>
+#include <utility>
 
 using namespace std;
+
+void showByValue(DynamicArray<int> array, const int* originalData) {
+    cout << "Получен массив: " << array << '\n';
+    cout << "Адрес данных совпадает: " << (array.begin() == originalData) << '\n';
+}
 
 int main() {
     DynamicArray<int> a(2);
@@ -112,4 +118,25 @@ int main() {
         cout << value << ' ';
     }
     cout << '\n';
+
+    cout << "\nЧасть 5\n";
+    DynamicArray<int> copy(1);
+    copy = values;
+    copy[0] = 7;
+    cout << "После копирующего присваивания: " << copy << '\n';
+    cout << "Исходный массив: " << values << '\n';
+
+    const int* originalData = values.begin();
+    cout << "Передача по значению, размер до вызова: " << values.size() << '\n';
+    showByValue(values, originalData);
+    cout << "Размер после копирования: " << values.size() << '\n';
+
+    cout << "Передача с move, размер до вызова: " << values.size() << '\n';
+    showByValue(std::move(values), originalData);
+    cout << "Размер после перемещения: " << values.size() << '\n';
+
+    DynamicArray<int> moved(1);
+    moved = std::move(copy);
+    cout << "После перемещающего присваивания: " << moved << '\n';
+    cout << "Размер источника: " << copy.size() << '\n';
 }
