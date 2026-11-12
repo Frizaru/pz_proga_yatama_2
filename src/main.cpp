@@ -69,4 +69,47 @@ int main() {
     } catch (const invalid_argument& error) {
         cout << "Размеры массивов не совпадают: " << error.what() << '\n';
     }
+
+    cout << "\nЧасть 4\n";
+    DynamicArray<int> values(2);
+    values[0] = 10;
+    values[1] = 20;
+    const DynamicArray<int>& readOnly = values;
+    cout << "Элемент по индексу 0: " << readOnly[0] << '\n';
+
+    try {
+        cout << readOnly[2] << '\n';
+    } catch (const out_of_range& error) {
+        cout << error.what() << '\n';
+    }
+
+    try {
+        values[0] = 101;
+    } catch (const invalid_argument& error) {
+        cout << error.what() << '\n';
+    }
+
+    DynamicArray<int> same(values);
+    cout << "Массивы равны: " << boolalpha << (values == same) << '\n';
+    same[0] = same[1];
+    cout << "Массивы различаются: " << (values != same) << '\n';
+
+    values += b;
+    cout << "После += массив: " << values << '\n';
+    values -= b;
+    cout << "После -= массив: " << values << '\n';
+
+    values += 5;
+    cout << "После += 5: " << values << '\n';
+    values -= 5;
+    cout << "После -= 5: " << values << '\n';
+
+    for (auto& value : values) {
+        ++value;
+    }
+    cout << "После изменения в цикле: ";
+    for (const auto& value : readOnly) {
+        cout << value << ' ';
+    }
+    cout << '\n';
 }
