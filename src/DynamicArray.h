@@ -18,17 +18,18 @@ class DynamicArray {
         }
     }
 
-    void checkValue(T value) const {
-        if constexpr (is_integral_v<T>) {
-            bool wrongValue = value > 100;
-            if constexpr (is_signed_v<T>) {
-                wrongValue = wrongValue || value < -100;
-            }
-            if (wrongValue) {
-                throw invalid_argument("Значение должно быть от -100 до 100");
-            }
+    void checkValue(const T& value) const {
+        checkValue(value, is_integral<T>{});
+    }
+
+    void checkValue(const T& value, true_type) const {
+        const T minimum = is_signed_v<T> ? -100 : 0;
+        if (value < minimum || value > 100) {
+            throw invalid_argument("Значение должно быть от -100 до 100");
         }
     }
+
+    void checkValue(const T&, false_type) const {}
 
     class Element {
         DynamicArray& array;
@@ -48,7 +49,8 @@ class DynamicArray {
         }
 
         Element& operator=(const Element& other) {
-            return *this = static_cast<const T&>(other);
+            const T& value = other;
+            return operator=(value);
         }
     };
 
@@ -71,17 +73,16 @@ public:
         }
 
         DynamicArray copy(other);
-        swap(data, copy.data);
-        swap(count, copy.count);
+        *this = std::move(copy);
         return *this;
     }
 
-    DynamicArray(DynamicArray&& other) noexcept : data(other.data), count(other.count) {
+    DynamicArray(DynamicArray&& other) : data(other.data), count(other.count) {
         other.data = nullptr;
         other.count = 0;
     }
 
-    DynamicArray& operator=(DynamicArray&& other) noexcept {
+    DynamicArray& operator=(DynamicArray&& other) {
         if (this == &other) {
             return *this;
         }
@@ -206,16 +207,7 @@ public:
             throw invalid_argument("Размеры массивов должны совпадать");
         }
 
-        if constexpr (is_arithmetic_v<T>) {
-            double sum = 0;
-            for (int i = 0; i < count; ++i) {
-                double difference = data[i] - other.data[i];
-                sum += difference * difference;
-            }
-            return sqrt(sum);
-        } else {
-            throw bad_typeid();
-        }
+        return distance(other, is_arithmetic<T>{});
     }
 
     void print() const {
@@ -223,6 +215,20 @@ public:
             cout << data[i] << ' ';
         }
         cout << '\n';
+    }
+
+private:
+    double distance(const DynamicArray& other, true_type) const {
+        double sum = 0;
+        for (int i = 0; i < count; ++i) {
+            double difference = data[i] - other.data[i];
+            sum += difference * difference;
+        }
+        return sqrt(sum);
+    }
+
+    double distance(const DynamicArray&, false_type) const {
+        throw bad_typeid();
     }
 };
 

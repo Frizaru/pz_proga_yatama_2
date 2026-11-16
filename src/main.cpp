@@ -8,9 +8,8 @@
 
 using namespace std;
 
-void showByValue(DynamicArray<int> array, const int* originalData) {
+void showByValue(DynamicArray<int> array) {
     cout << "Получен массив: " << array << '\n';
-    cout << "Адрес данных совпадает: " << (array.begin() == originalData) << '\n';
 }
 
 int main() {
@@ -96,7 +95,7 @@ int main() {
     }
 
     DynamicArray<int> same(values);
-    cout << "Массивы равны: " << boolalpha << (values == same) << '\n';
+    cout << "Массивы равны: " << (values == same) << '\n';
     same[0] = same[1];
     cout << "Массивы различаются: " << (values != same) << '\n';
 
@@ -126,13 +125,12 @@ int main() {
     cout << "После копирующего присваивания: " << copy << '\n';
     cout << "Исходный массив: " << values << '\n';
 
-    const int* originalData = values.begin();
     cout << "Передача по значению, размер до вызова: " << values.size() << '\n';
-    showByValue(values, originalData);
+    showByValue(values);
     cout << "Размер после копирования: " << values.size() << '\n';
 
-    cout << "Передача с move, размер до вызова: " << values.size() << '\n';
-    showByValue(std::move(values), originalData);
+    cout << "Передача с move:\n";
+    showByValue(std::move(values));
     cout << "Размер после перемещения: " << values.size() << '\n';
 
     DynamicArray<int> moved(1);
